@@ -127,7 +127,7 @@ describe('server', () => {
             consolidateBy: 'sum',
         });
 
-        expect(requests[0].params.get('from')).toBe(String(T0));
+        expect(requests[0].params.get('from')).toBe(String(T0 - 1));
         expect(requests[0].params.get('until')).toBe('now');
         expect(json).toMatchObject({ from: '2026-01-01T00:00:00Z', until: 'now', totalSeries: 2 });
         expect(json.series[1]).toMatchObject({

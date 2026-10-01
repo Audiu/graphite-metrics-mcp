@@ -1,31 +1,38 @@
 import { describe, expect, it } from 'vitest';
-import { formatDuration, isoFromEpoch, toGraphiteTime } from '../src/time.js';
+import { formatDuration, isoFromEpoch, resolveTime } from '../src/time.js';
 
-describe('toGraphiteTime', () => {
+describe('resolveTime', () => {
     it('uses the fallback for empty input', () => {
-        expect(toGraphiteTime(undefined, '-24h')).toBe('-24h');
-        expect(toGraphiteTime('  ', 'now')).toBe('now');
+        expect(resolveTime(undefined, '-24h')).toEqual({ param: '-24h', label: '-24h' });
+        expect(resolveTime('  ', 'now')).toEqual({ param: 'now', label: 'now' });
     });
 
-    it('passes graphite syntax through', () => {
-        for (const value of ['-1h', '-7d', 'now', 'yesterday', '13:00_20260101', '1767225600']) {
-            expect(toGraphiteTime(value, 'x')).toBe(value);
+    it('passes relative and graphite-native times through', () => {
+        for (const value of ['-1h', '-7d', 'now', 'yesterday', '13:00_20260101']) {
+            expect(resolveTime(value, 'x')).toEqual({ param: value, label: value });
         }
     });
 
-    it('converts ISO datetimes to epoch seconds, treating missing offsets as UTC', () => {
-        expect(toGraphiteTime('2026-01-01T00:00:00Z', 'x')).toBe('1767225600');
-        expect(toGraphiteTime('2026-01-01T00:00:00', 'x')).toBe('1767225600');
-        expect(toGraphiteTime('2026-01-01T01:00:00+01:00', 'x')).toBe('1767225600');
-        expect(toGraphiteTime('2026-01-01', 'x')).toBe('1767225600');
+    it('sends absolute times one second early so ranges are [from, until)', () => {
+        expect(resolveTime('2026-01-01T00:00:00Z', 'x')).toEqual({
+            param: '1767225599',
+            label: '2026-01-01T00:00:00Z',
+        });
+        expect(resolveTime('1767225600', 'x')).toEqual({ param: '1767225599', label: '2026-01-01T00:00:00Z' });
+    });
+
+    it('parses ISO dates and datetimes, treating missing offsets as UTC', () => {
+        for (const value of ['2026-01-01T00:00:00', '2026-01-01T01:00:00+01:00', '2026-01-01']) {
+            expect(resolveTime(value, 'x').label).toBe('2026-01-01T00:00:00Z');
+        }
     });
 
     it('converts epoch milliseconds to seconds', () => {
-        expect(toGraphiteTime('1767225600123', 'x')).toBe('1767225600');
+        expect(resolveTime('1767225600123', 'x').label).toBe('2026-01-01T00:00:00Z');
     });
 
     it('rejects unparseable ISO-looking input', () => {
-        expect(() => toGraphiteTime('2026-13-45T99:00', 'x')).toThrow(/Could not parse time/);
+        expect(() => resolveTime('2026-13-45T99:00', 'x')).toThrow(/Could not parse time/);
     });
 });
 

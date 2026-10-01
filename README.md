@@ -24,14 +24,14 @@ All tools are read-only.
 
 ### `graphite_query` options
 
-| Option          | Default       | Notes                                                                                                                                |
-| --------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `targets`       | —             | Array of target expressions, e.g. `sumSeries(app.*.requests.count)`, `summarize(signups.count, '1d', 'sum')`.                        |
-| `from`, `until` | `-24h`, `now` | Graphite syntax (`-1h`, `-7d`, `now`, `yesterday`), epoch seconds, or ISO-8601. An ISO datetime without an offset is treated as UTC. |
-| `maxDataPoints` | `100`         | Datapoints returned per series. Longer series are consolidated.                                                                      |
-| `consolidateBy` | `avg`         | `avg`, `sum`, `min`, `max` or `last`. Use `sum` for counters.                                                                        |
-| `summaryOnly`   | `false`       | Return only the stats. Useful for wide wildcard queries.                                                                             |
-| `maxSeries`     | `25`          | Maximum number of series to return.                                                                                                  |
+| Option          | Default       | Notes                                                                                                                                                                                                       |
+| --------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `targets`       | —             | Array of target expressions, e.g. `sumSeries(app.*.requests.count)`, `summarize(signups.count, '1d', 'sum')`.                                                                                               |
+| `from`, `until` | `-24h`, `now` | Graphite syntax (`-1h`, `-7d`, `now`, `yesterday`), epoch seconds, or ISO-8601 (UTC if no offset). Absolute times give a `[from, until)` range: `from: 2026-09-01, until: 2026-10-01` is exactly September. |
+| `maxDataPoints` | `100`         | Datapoints returned per series. Longer series are consolidated.                                                                                                                                             |
+| `consolidateBy` | `avg`         | `avg`, `sum`, `min`, `max` or `last`. Use `sum` for counters.                                                                                                                                               |
+| `summaryOnly`   | `false`       | Return only the stats. Useful for wide wildcard queries.                                                                                                                                                    |
+| `maxSeries`     | `25`          | Maximum number of series to return.                                                                                                                                                                         |
 
 Stats are always computed over the full-resolution data, before consolidation, so `sum` is the true total for the
 range.

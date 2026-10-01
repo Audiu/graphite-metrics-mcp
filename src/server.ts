@@ -2,7 +2,7 @@ import { McpServer, type CallToolResult } from '@modelcontextprotocol/server';
 import { z } from 'zod';
 import { GraphiteClient, type GraphiteFunction } from './graphite.js';
 import { CONSOLIDATION_METHODS, summariseSeries } from './series.js';
-import { isoFromEpoch, toGraphiteTime } from './time.js';
+import { resolveTime } from './time.js';
 
 const INSTRUCTIONS = `Query a Graphite (graphite-web) time-series server.
 
@@ -99,8 +99,13 @@ export function createServer(client: GraphiteClient, version: string): McpServer
                 from: z
                     .string()
                     .default('-24h')
-                    .describe('Start time: -1h, -7d, ISO-8601, epoch seconds. Default -24h.'),
-                until: z.string().default('now').describe('End time, same formats as from. Default now.'),
+                    .describe('Start time (inclusive): -1h, -7d, ISO-8601, epoch seconds. Default -24h.'),
+                until: z
+                    .string()
+                    .default('now')
+                    .describe(
+                        'End time (exclusive for absolute times, so 2026-10-01 stops at the end of 30 Sep). Default now.',
+                    ),
                 maxDataPoints: z
                     .number()
                     .int()
@@ -119,12 +124,12 @@ export function createServer(client: GraphiteClient, version: string): McpServer
         },
         ({ targets, from, until, maxDataPoints, consolidateBy, summaryOnly, maxSeries }) =>
             run(async () => {
-                const range = { from: toGraphiteTime(from, '-24h'), until: toGraphiteTime(until, 'now') };
-                const series = await client.render(targets, range.from, range.until);
+                const range = { from: resolveTime(from, '-24h'), until: resolveTime(until, 'now') };
+                const series = await client.render(targets, range.from.param, range.until.param);
                 const shown = series.slice(0, maxSeries);
                 return {
-                    from: describeTime(range.from),
-                    until: describeTime(range.until),
+                    from: range.from.label,
+                    until: range.until.label,
                     totalSeries: series.length,
                     ...(series.length > maxSeries && {
                         truncated: `Showing ${maxSeries} of ${series.length} series. Raise maxSeries or narrow with highestMax()/limit().`,
@@ -205,11 +210,6 @@ export function buildMatcher(query: string, regex: boolean): (path: string) => b
         const lower = path.toLowerCase();
         return terms.every((term) => lower.includes(term));
     };
-}
-
-/** Echo epoch seconds back as ISO so the range is readable; leave relative times alone. */
-function describeTime(value: string): string {
-    return /^\d+$/.test(value) ? isoFromEpoch(Number(value)) : value;
 }
 
 function firstSentence(fn: GraphiteFunction): string | undefined {
