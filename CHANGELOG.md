@@ -12,3 +12,5 @@ Initial release.
 - `graphite_list_functions`: list the server's render functions, or show full docs for one.
 - Supports basic auth (env vars or credentials in the URL), custom headers, ISO-8601 or Graphite-relative times, and
   readable errors for auth, network and invalid-target failures.
+- Absolute times give a `[from, until)` range, so `until: 2026-10-01` stops at the end of 30 September. Graphite on
+  its own returns `(from, until]`, which pulls in a stray point from the next day.
