@@ -1,0 +1,60 @@
+{
+    "name": "graphite-metrics-mcp",
+    "version": "0.1.0",
+    "description": "MCP server for Graphite metrics: lets AI agents browse, search and query graphite-web time series",
+    "keywords": [
+        "mcp",
+        "model-context-protocol",
+        "graphite",
+        "graphite-web",
+        "statsd",
+        "metrics",
+        "observability",
+        "claude"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Audiu/graphite-metrics-mcp.git"
+    },
+    "bugs": {
+        "url": "https://github.com/Audiu/graphite-metrics-mcp/issues"
+    },
+    "homepage": "https://github.com/Audiu/graphite-metrics-mcp#readme",
+    "license": "MIT",
+    "author": "Mike Goodfellow <mgoodfellow@users.noreply.github.com>",
+    "type": "module",
+    "bin": {
+        "graphite-metrics-mcp": "dist/index.js"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE",
+        "CHANGELOG.md"
+    ],
+    "engines": {
+        "node": ">=22"
+    },
+    "scripts": {
+        "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.build.json",
+        "typescript": "tsc --noEmit",
+        "test": "vitest run",
+        "check": "npm run typescript && npm test && npm run build",
+        "prettier": "prettier --write .",
+        "demo:graphite": "node scripts/demo-graphite.mjs",
+        "inspect": "npm run build && npx -y @modelcontextprotocol/inspector node dist/index.js",
+        "prepublishOnly": "npm run check"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/server": "^2.2.0",
+        "zod": "^4.6.5"
+    },
+    "devDependencies": {
+        "@modelcontextprotocol/client": "^2.2.0",
+        "@types/node": "^24.19.0",
+        "prettier": "^3.9.9",
+        "typescript": "^5.9.3",
+        "vite": "^8.3.1",
+        "vitest": "^5.0.3"
+    }
+}
