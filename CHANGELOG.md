@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Keep credentials out of invalid URL errors and reject unsupported base URLs.
+- Bind demo Graphite ports to localhost and ignore local environment files and package archives.
+- Document the local trust boundary and query resource limits.
+- Validate release tags and skip prereleases in the npm publishing workflow.
+
 ## 0.1.0
 
 Initial release.
