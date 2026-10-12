@@ -1,12 +1,5 @@
 # Changelog
 
-## Unreleased
-
-- Keep credentials out of invalid URL errors and reject unsupported base URLs.
-- Bind demo Graphite ports to localhost and ignore local environment files and package archives.
-- Document the local trust boundary and query resource limits.
-- Validate release tags and skip prereleases in the npm publishing workflow.
-
 ## 0.1.0
 
 Initial release.
@@ -19,5 +12,7 @@ Initial release.
 - `graphite_list_functions`: list the server's render functions, or show full docs for one.
 - Supports basic auth (env vars or credentials in the URL), custom headers, ISO-8601 or Graphite-relative times, and
   readable errors for auth, network and invalid-target failures.
+- `GRAPHITE_URL` must be an `http://` or `https://` base URL without a query or fragment. Configuration errors never
+  echo the URL, so embedded credentials stay out of logs.
 - Absolute times give a `[from, until)` range, so `until: 2026-10-01` stops at the end of 30 September. Graphite on
   its own returns `(from, until]`, which pulls in a stray point from the next day.

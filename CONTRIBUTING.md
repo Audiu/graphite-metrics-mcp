@@ -25,8 +25,8 @@ npm run demo:graphite -- --stop
 
 ### Releasing (maintainers)
 
-Before the public launch, enable GitHub secret scanning, push protection and private vulnerability reporting,
-and add a security policy pointing to the private reporting channel. Review branch protection for `main`.
+Before the public launch, enable GitHub secret scanning, push protection and private vulnerability reporting
+(`SECURITY.md` sends reporters there). Review branch protection for `main`.
 
 The npm package must be available before the README's `npx` installation works. Establish package ownership
 and publishing access on npm before creating the first GitHub release. Configure
