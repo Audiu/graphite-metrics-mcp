@@ -18,6 +18,27 @@ describe('loadConfig', () => {
         });
     });
 
+    it('does not expose credentials in invalid URL errors', () => {
+        const url = 'http://alice:private-password@invalid host';
+        expect(() => loadConfig({ GRAPHITE_URL: url })).toThrow(ConfigError);
+        expect(() => loadConfig({ GRAPHITE_URL: url })).toThrow('GRAPHITE_URL is not a valid URL.');
+        expect(() => loadConfig({ GRAPHITE_URL: url })).not.toThrow(/private-password/);
+    });
+
+    it.each(['file:///tmp/graphite', 'ftp://graphite', 'https://graphite/?token=secret', 'https://graphite/#secret'])(
+        'rejects unsupported base URL %s',
+        (url) => {
+            expect(() => loadConfig({ GRAPHITE_URL: url })).toThrow(ConfigError);
+            expect(() => loadConfig({ GRAPHITE_URL: url })).not.toThrow(/secret/);
+        },
+    );
+
+    it('reports malformed encoded credentials without exposing them', () => {
+        expect(() => loadConfig({ GRAPHITE_URL: 'https://alice:%FF@graphite' })).toThrow(
+            'GRAPHITE_URL contains invalid percent-encoded credentials.',
+        );
+    });
+
     it('keeps a URL prefix', () => {
         expect(loadConfig({ GRAPHITE_URL: 'https://example.com/graphite/' }).url).toBe('https://example.com/graphite');
     });

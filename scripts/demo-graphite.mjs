@@ -36,9 +36,9 @@ if (!running) {
         '--name',
         NAME,
         '-p',
-        `${HTTP_PORT}:80`,
+        `127.0.0.1:${HTTP_PORT}:80`,
         '-p',
-        `${CARBON_PORT}:2003`,
+        `127.0.0.1:${CARBON_PORT}:2003`,
         'graphiteapp/graphite-statsd',
     );
 }

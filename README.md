@@ -22,6 +22,18 @@ so it works with stock graphite-web and anything that implements the same API. T
 
 All tools are read-only.
 
+### Security and operating limits
+
+This is a local stdio server for a trusted MCP client. Metric names, values, function documentation and upstream
+error excerpts are returned to that client and may be sent to its AI provider. Use credentials with only the
+Graphite access you intend to share, and use HTTPS when connecting across an untrusted network. Keep credentials
+out of source control and issue reports.
+
+`maxSeries`, `maxDataPoints` and `summaryOnly` limit the returned output, not the amount fetched from Graphite.
+Wide queries can still consume substantial server and local memory. Narrow targets and time ranges at the source.
+Regex searches run JavaScript regular expressions locally; pathological patterns can block the process. Use
+substring searches for untrusted input. This server is not designed as a shared service for untrusted callers.
+
 ### `graphite_query` options
 
 | Option          | Default       | Notes                                                                                                                                                                                                       |
@@ -49,11 +61,15 @@ Configuration is read from environment variables:
 | `GRAPHITE_TIMEOUT_MS`              | no       | Request timeout in milliseconds (default `30000`, `0` disables it).                                                 |
 | `GRAPHITE_INDEX_CACHE_TTL_SECONDS` | no       | How long the metric index used by search is cached (default `300`).                                                 |
 
-For a server with a self-signed certificate, set `NODE_EXTRA_CA_CERTS=/path/to/ca.pem`.
+The base URL must use HTTP or HTTPS and must not contain a query string or fragment; supply tokens through
+`GRAPHITE_HEADERS`. For a server with a self-signed certificate, set `NODE_EXTRA_CA_CERTS=/path/to/ca.pem`.
 
 ## Usage
 
 Requires Node.js 22 or later.
+
+Until the first npm release is available, use the [from-source installation](#from-source). The `npx` examples
+below apply after publication.
 
 ### Claude Code
 

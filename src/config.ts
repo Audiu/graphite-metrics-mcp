@@ -24,15 +24,23 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): GraphiteConfig
     try {
         parsed = new URL(rawUrl);
     } catch {
-        throw new ConfigError(`GRAPHITE_URL is not a valid URL: ${rawUrl}`);
+        // URLs may contain passwords or tokens; never echo the supplied value into logs.
+        throw new ConfigError('GRAPHITE_URL is not a valid URL. Use an http:// or https:// base URL.');
+    }
+    if (!['http:', 'https:'].includes(parsed.protocol) || parsed.search || parsed.hash) {
+        throw new ConfigError('GRAPHITE_URL must use http:// or https:// and must not contain a query or fragment.');
     }
 
     // fetch() refuses URLs with embedded credentials, so lift them out and use them as basic auth.
     let username = env.GRAPHITE_USERNAME || undefined;
     let password = env.GRAPHITE_PASSWORD || undefined;
     if (parsed.username || parsed.password) {
-        username ??= decodeURIComponent(parsed.username);
-        password ??= decodeURIComponent(parsed.password);
+        try {
+            username ??= decodeURIComponent(parsed.username);
+            password ??= decodeURIComponent(parsed.password);
+        } catch {
+            throw new ConfigError('GRAPHITE_URL contains invalid percent-encoded credentials.');
+        }
         parsed.username = '';
         parsed.password = '';
     }
