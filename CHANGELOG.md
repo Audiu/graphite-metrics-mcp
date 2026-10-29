@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- First release published from CI with an npm provenance attestation.
+- README: removed the notice saying the package was not yet on npm.
+
 ## 0.1.0
 
 Initial release.
