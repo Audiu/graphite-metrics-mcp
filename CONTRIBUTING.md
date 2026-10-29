@@ -25,14 +25,11 @@ npm run demo:graphite -- --stop
 
 ### Releasing (maintainers)
 
-Before the public launch, enable GitHub secret scanning, push protection and private vulnerability reporting
-(`SECURITY.md` sends reporters there). Review branch protection for `main`.
-
-The npm package must be available before the README's `npx` installation works. Establish package ownership
-and publishing access on npm before creating the first GitHub release. Configure
-[npm trusted publishing](https://docs.npmjs.com/trusted-publishers/) for owner `Audiu`, repository
-`graphite-metrics-mcp`, workflow `publish.yml`, with direct publishing allowed. The repository must be public
-for the workflow's provenance attestation. These are account settings, not settings stored in this repository.
+Releases are published by `.github/workflows/publish.yml` through
+[npm trusted publishing](https://docs.npmjs.com/trusted-publishers/), so no npm token is stored anywhere. The
+trusted publisher on npmjs.com is configured for owner `Audiu`, repository `graphite-metrics-mcp`, workflow
+`publish.yml`, with direct publishing allowed. Renaming the workflow file or the repository breaks publishing until
+that configuration is updated.
 
 For each release:
 
@@ -41,5 +38,3 @@ For each release:
 3. Publish a GitHub release tagged `v` followed by the exact package version (for example `v0.1.0`). This starts
    the npm publishing workflow. Prereleases are skipped so they cannot replace npm's `latest` release.
 4. Verify the published version with `npm view graphite-metrics-mcp version`, then test installation from npm.
-
-Remove the README's first-release notice once the package is available.

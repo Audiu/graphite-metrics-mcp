@@ -1,6 +1,6 @@
 {
     "name": "graphite-metrics-mcp",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "MCP server for Graphite metrics: lets AI agents browse, search and query graphite-web time series",
     "keywords": [
         "mcp",

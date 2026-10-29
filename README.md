@@ -68,9 +68,6 @@ The base URL must use HTTP or HTTPS and must not contain a query string or fragm
 
 Requires Node.js 22 or later.
 
-Until the first npm release is available, use the [from-source installation](#from-source). The `npx` examples
-below apply after publication.
-
 ### Claude Code
 
 ```bash
